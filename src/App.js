@@ -1,4 +1,4 @@
-import React, {Fragment, Component} from 'react'
+import React, {Fragment, useState, useEffect} from 'react'
 import CardList from './CardList'
 import SearchBox from './SearchBox.js'
 import './index.css'
@@ -7,44 +7,39 @@ import Scroll from './Scroll';
 
 
 
-class  App extends Component{
-    constructor() {
-        super()
-        this.state = {
-            robots: [],
-            searchfield: ''
-        }
-    }
+const  App = () => {
+    
+    const [robots, setRobots ] = useState([])
+    const [searchfield, setSearchField] = useState('')
 
-    componentDidMount() {
-        fetch('http://jsonplaceholder.typicode.com/users').then(response => {
-            return response.json();
-        } ).then(users => {
-            this.setState({robots: users}); 
-        })
+    useEffect(() => {
+        fetch('https://jsonplaceholder.typicode.com/users')
+        .then(response=>response.json())
+        .then(users => {setRobots(users)});
+    },[])
+
+
+    const onSearchChange = (event) => {
+        setSearchField(event.target.value)
         
     }
 
-    onSearchChange = (event) => {
-        this.setState({searchfield: event.target.value})
-        
-    }
-    render(){
-        const filteredRobots = this.state.robots.filter(robots => {
-            return robots.name.toLowerCase().includes(this.state.searchfield.toLowerCase()); 
+    
+        const filteredRobots = robots.filter(robots => {
+            return robots.name.toLowerCase().includes(searchfield.toLowerCase()); 
         })
     return (
         <Fragment>
             <div className = "tc">
                  <h1 className = "white f1 f2">Robots</h1>
-                <SearchBox searchChange = {this.onSearchChange} /> 
+                <SearchBox searchChange = { onSearchChange} /> 
                 <Scroll>
                  <CardList  robots = {filteredRobots}/>
                 </Scroll>
             </div>
         </Fragment>
     )
-    }; 
+     
 }
 
 export default App
